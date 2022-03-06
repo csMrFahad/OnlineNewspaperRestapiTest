@@ -1,0 +1,15 @@
+const express = require("express");
+const router = express.Router();
+
+const UserController = require("../controllers/user");
+// const checkAuth = require('../middleware/check-auth');
+
+router.post("/signup", UserController.user_signup);
+
+router.post("/login", UserController.user_login);
+
+router.get("/editor", UserController.get_all_editors);
+
+router.post("/editor", UserController.create_new_editor);
+
+module.exports = router;
