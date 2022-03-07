@@ -42,12 +42,12 @@ We can modify source code slightly to get all users, previous editors etc.
 
 
 **/user/editor** POST\
-Modify editor.\
+Modify editor. Assigns new editor and removes old editor if any.\
 Route accessible only by administrator->Requires Bearer jwttoken.\
 Sample json body
 ```
 {
-	"email": "testuser@test.com"
+	"email": "neweditor@test.com"
 }
 ```
 <br/>
@@ -60,7 +60,7 @@ Get count and details of all articles in newspaper.
 
 **/article** POST\
 Create a new post.
-Route accessible only by current editor->Requires Bearer jwttoken.\
+Route accessible *only by current editor*->Requires Bearer jwttoken.\
 Sample json body
 ```
 {
