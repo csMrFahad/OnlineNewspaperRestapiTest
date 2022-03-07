@@ -14,8 +14,8 @@ const userSchema = mongoose.Schema({
   role: { type: String, default: "public" },
   status: {
     active: { type: Boolean, default: false },
-    start: { type: Date, default: Date.now },
-    end: { type: Date },
+    start: { type: Date, default: null },
+    end: { type: Date, default:null },
   },
 });
 

@@ -25,12 +25,6 @@ exports.user_signup = (req, res, next) => {
               email: req.body.email,
               password: hash,
               name: req.body.name,
-              role: req.body.role,
-              status: {
-                active: req.body.status.active,
-                start: req.body.status.start,
-                end: req.body.status.end,
-              },
             });
             user
               .save()
@@ -99,7 +93,7 @@ exports.user_login = (req, res, next) => {
 
 exports.get_all_editors = (req, res, next) => {
   User.find({ role: "editor" })
-    .select("name _id email status")
+    .select("name _id email status role")
     .exec()
     .then((users) => {
       res.status(200).json({
@@ -114,6 +108,62 @@ exports.get_all_editors = (req, res, next) => {
     });
 };
 
-exports.create_new_editor = (req, res, next) => {
-  return res.status(200).json({ msg: "message" });
+exports.create_new_editor = async (req, res, next) => {
+  await remove_old_editor(res);
+  await add_new_editor(req, res);
+};
+
+const remove_old_editor = async (res) => {
+  await User.find({ role: "editor" })
+    .exec()
+    .then((user) => {
+      if (user.length < 1) {
+        return;
+      }
+      if (user.length == 1) {
+        user[0].role = "public";
+        user[0].status.active = false;
+        user[0].status.end = Date.now();
+        user[0].save();
+      } else {
+        return res.status(409).json({
+          message: "Contact super-admin",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+};
+
+const add_new_editor = async (req, res) => {
+  await User.find({ email: req.body.email })
+    .exec()
+    .then((user) => {
+      if (user.length < 1) {
+        return res.status(409).json({
+          message: "Mail does not exist",
+        });
+      } else if (user.length > 1) {
+        return res.status(409).json({
+          message: "Contact super-admin",
+        });
+      } else {
+        user[0].role = "editor";
+        user[0].status.active = true;
+        user[0].status.start = Date.now();
+        user[0].status.end = null;
+        user[0].save();
+        res.status(200).json({
+          message: "Editor updated",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
 };

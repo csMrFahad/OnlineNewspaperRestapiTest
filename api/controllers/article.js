@@ -9,7 +9,7 @@ exports.create_new_article = (req, res, next) => {
       title: req.body.content.title,
       body: req.body.content.body,
     },
-    editor: req.body.editor,
+    editor: req.userData.userId,
   });
   article
     .save()
